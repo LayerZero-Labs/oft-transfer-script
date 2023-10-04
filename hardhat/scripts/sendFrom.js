@@ -1,10 +1,12 @@
 require("dotenv").config();
-const { Contract, providers, Wallet, utils } = require("ethers");
+const { Contract, JsonRpcProvider, Wallet, utils, AbiCoder, parseEther } = require("ethers");
+const X = require("ethers");
 const hre = require("hardhat");
 
 async function main() {
+    const abiCoder = new AbiCoder()
     // Set up the RPC provider and wallet with the private key
-    const rpc = new providers.JsonRpcProvider(process.env.RPC_ENDPOINT);
+    const rpc = new JsonRpcProvider(process.env.RPC_ENDPOINT);
     const wallet = new Wallet(process.env.PRIVATE_KEY, rpc);
     // Import the ABI for the OFT contract
     const abi = require('../abi/oft.json');
@@ -22,8 +24,8 @@ async function main() {
     // Define parameters for the sendFrom() function
     const sender = wallet.address; // Assuming sender is the wallet's address
     const toAddress = wallet.address; // Assuming receiver is ALSO the wallet's address
-    const toAddressBytes32 = ethers.utils.defaultAbiCoder.encode(['address'],[toAddress]); // Convert the 'toAddress' to bytes32 for compatibility with the function parameters
-    const amount = utils.parseEther('0.001'); // Define the amount to send in Ether units, the example is hardcoded
+    const toAddressBytes32 = abiCoder.encode(['address'],[toAddress]); // Convert the 'toAddress' to bytes32 for compatibility with the function parameters
+    const amount = parseEther('0.001'); // Define the amount to send in Ether units, the example is hardcoded
     const refundAddress = sender; // Address where gas refunds will be sent if necessary
     const zroAddress = '0x0000000000000000000000000000000000000000'; // ZRO wallet address
     

@@ -1,13 +1,12 @@
 require("@nomicfoundation/hardhat-toolbox");
-
-const AVALANCHE_PRIVATE_KEY = "Your__Private_Key";
+require("dotenv").config();
 
 module.exports = {
   solidity: "0.8.19",
   networks: {
     avalanche: {
       url: `https://api.avax.network/ext/bc/C/rpc`,
-      accounts: [AVALANCHE_PRIVATE_KEY]
+      accounts: [process.env.PRIVATE_KEY]
     }
   }
 };
