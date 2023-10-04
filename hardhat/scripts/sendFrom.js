@@ -2,8 +2,16 @@ require("dotenv").config();
 const { Contract, JsonRpcProvider, Wallet, utils, AbiCoder, parseEther } = require("ethers");
 const X = require("ethers");
 const hre = require("hardhat");
+const { task } = require("hardhat/config");
 
-async function main() {
+task("sendFrom", "Send tokens using the OFT contract")
+  .addParam("qty", "The quantity to send")
+  .setAction(async (taskArgs, hre) => {
+    await main(taskArgs.qty); // Pass the qty parameter to the main function
+  });
+
+
+async function main(qty) {
     const abiCoder = new AbiCoder()
     // Set up the RPC provider and wallet with the private key
     const rpc = new JsonRpcProvider(process.env.RPC_ENDPOINT);
@@ -25,14 +33,14 @@ async function main() {
     const sender = wallet.address; // Assuming sender is the wallet's address
     const toAddress = wallet.address; // Assuming receiver is ALSO the wallet's address
     const toAddressBytes32 = abiCoder.encode(['address'],[toAddress]); // Convert the 'toAddress' to bytes32 for compatibility with the function parameters
-    const amount = parseEther('0.001'); // Define the amount to send in Ether units, the example is hardcoded
+    const amount = BigNumber.from(qty); // Define the amount to send in wei units
     const refundAddress = sender; // Address where gas refunds will be sent if necessary
     const zroAddress = '0x0000000000000000000000000000000000000000'; // ZRO wallet address
     
     // Estimate the fees for sending the token
     const [nativeFee, zroFee] = await OFTContract.estimateSendFee(remoteChainId, toAddressBytes32, amount, useZro, adapterParams);
     // Log the estimated fees
-    console.log("Fees:", nativeFee.toNumber(), zroFee.toNumber());
+    console.log("Fees:", nativeFee, zroFee);
     
     // Call the sendFrom function
     const tx = await OFTContract.sendFrom(sender, remoteChainId, toAddressBytes32, amount, refundAddress, zroAddress, adapterParams, nativeFee);
@@ -43,10 +51,3 @@ async function main() {
     console.log(` Plug this tx hash into LayerZero Scan: ${receipt.transactionHash}`);
     console.log(`* check your address [${sender}] on the destination chain, in the ERC20 transaction tab!`);
 }
-
-main()
-    .then(() => process.exit(0))
-    .catch(error => {
-        console.error(error);
-        process.exit(1);
-    });
