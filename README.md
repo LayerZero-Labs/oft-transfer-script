@@ -65,29 +65,3 @@ To see if your transaction is successful, plug the transaction hash into [LayerZ
 3. **Fee Estimation**: Before executing the token transfer, the script estimates the fees associated with the transaction using the `estimateSendFee()` function of the OFT contract.
 4. **Token Transfer**: The script calls the `sendFrom()` function to initiate the token transfer.
 5. **Confirmation**: It then waits for the transaction to be confirmed and logs the transaction hash.
-
-
-
-## ABI
-
-To interact with the `SHRAPToken` contract, you'll need its ABI. The ABI can be generated from the contract's source code using the Solidity compiler.
-
-## estimateFees()
-
-Before sending tokens, it's recommended to estimate the fees. Using the `estimateFees()` function in the contract:
-
-```
-// Prepare the parameters for the estimateSendFee function
-let dstChainId = 148;  // Example value, replace with the appropriate chain ID
-let toAddress = ethers.utils.arrayify('0xc13b65f7c53Cd6db2EA205a4b574b4a0858720A6'); // Convert the address to bytes
-let amount = ethers.utils.parseEther('0.001'); // The amount to send
-let useZro = false; // Whether to use ZRO for fees
-let adapterParams = ethers.utils.arrayify('0x'); // Any additional parameters required for the adapter, if any
-
-// Call the function
-let [nativeFee, zroFee] = await shrap.estimateSendFee(dstChainId, toAddress, amount, useZro, adapterParams);
-
-// Display the estimated fees
-console.log("Estimated native fee:", ethers.utils.formatEther(nativeFee));
-console.log("Estimated ZRO fee:", ethers.utils.formatEther(zroFee));
-```
