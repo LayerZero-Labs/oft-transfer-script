@@ -1,7 +1,9 @@
-require("dotenv").config();
-const { Contract, JsonRpcProvider, Wallet, AbiCoder } = require("ethers");
+import { Contract, JsonRpcProvider, Wallet, AbiCoder, ContractTransactionReceipt, Transaction, TransactionResponse, TransactionReceipt } from "ethers";
+import assert from "assert"
 
-async function main(qty) {
+async function main(qty: string) {
+    assert(process.env.PRIVATE_KEY, "Missing PRIVATE_KEY");
+
     const abiCoder = new AbiCoder()
     // Set up the RPC provider and wallet with the private key
     const rpc = new JsonRpcProvider(process.env.RPC_ENDPOINT);
@@ -22,24 +24,23 @@ async function main(qty) {
     // Define parameters for the sendFrom() function
     const sender = wallet.address; // Assuming sender is the wallet's address
     const toAddress = wallet.address; // Assuming receiver is ALSO the wallet's address
-    const toAddressBytes32 = abiCoder.encode(['address'],[toAddress]); // Convert the 'toAddress' to bytes32 for compatibility with the function parameters
     const amount = BigInt(qty); // Define the amount to send in wei units
     const refundAddress = sender; // Address where gas refunds will be sent if necessary
     const zroAddress = '0x0000000000000000000000000000000000000000'; // ZRO wallet address
     
     // Estimate the fees for sending the token
-    const [nativeFee, zroFee] = await OFTContract.estimateSendFee(remoteChainId, toAddressBytes32, amount, useZro, adapterParams);
+    const [nativeFee, zroFee] = await OFTContract.estimateSendFee(remoteChainId, toAddress, amount, useZro, adapterParams);
     // Log the estimated fees
     console.log("Fees:", nativeFee, zroFee);
     
     // Call the sendFrom function
-    const tx = await OFTContract.sendFrom(sender, remoteChainId, toAddressBytes32, amount, refundAddress, zroAddress, adapterParams, nativeFee);
+    const tx: TransactionResponse = await OFTContract.sendFrom(sender, remoteChainId, toAddress, amount, refundAddress, zroAddress, adapterParams, nativeFee);
     // Wait for the transaction to be confirmed
-    const receipt = await tx.wait();
+    const receipt: TransactionReceipt | null = await tx.wait();
 
     // Log the transaction hash and a message for the user
-    console.log(` Plug this tx hash into LayerZero Scan: ${receipt.transactionHash}`);
+    console.log(` Plug this tx hash into LayerZero Scan: ${receipt?.hash}`);
     console.log(`* check your address [${sender}] on the destination chain, in the ERC20 transaction tab!`);
 }
 
-module.exports = main;
+export default main

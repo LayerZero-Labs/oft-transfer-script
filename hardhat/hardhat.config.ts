@@ -1,7 +1,8 @@
-require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
-const main = require("./scripts/sendFrom");
-const { task } = require("hardhat/config");
+
+import "@nomicfoundation/hardhat-toolbox";
+import main from "./scripts/sendFrom";
+import { task } from "hardhat/config";
 
 task("sendFrom", "Send tokens using the OFT contract")
   .addParam("qty", "The quantity to send")
