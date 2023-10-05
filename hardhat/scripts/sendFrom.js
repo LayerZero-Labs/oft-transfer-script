@@ -1,15 +1,5 @@
 require("dotenv").config();
-const { Contract, JsonRpcProvider, Wallet, utils, AbiCoder, parseEther } = require("ethers");
-const X = require("ethers");
-const hre = require("hardhat");
-const { task } = require("hardhat/config");
-
-task("sendFrom", "Send tokens using the OFT contract")
-  .addParam("qty", "The quantity to send")
-  .setAction(async (taskArgs, hre) => {
-    await main(taskArgs.qty); // Pass the qty parameter to the main function
-  });
-
+const { Contract, JsonRpcProvider, Wallet, AbiCoder } = require("ethers");
 
 async function main(qty) {
     const abiCoder = new AbiCoder()
@@ -33,7 +23,7 @@ async function main(qty) {
     const sender = wallet.address; // Assuming sender is the wallet's address
     const toAddress = wallet.address; // Assuming receiver is ALSO the wallet's address
     const toAddressBytes32 = abiCoder.encode(['address'],[toAddress]); // Convert the 'toAddress' to bytes32 for compatibility with the function parameters
-    const amount = BigNumber.from(qty); // Define the amount to send in wei units
+    const amount = BigInt(qty); // Define the amount to send in wei units
     const refundAddress = sender; // Address where gas refunds will be sent if necessary
     const zroAddress = '0x0000000000000000000000000000000000000000'; // ZRO wallet address
     
@@ -51,3 +41,5 @@ async function main(qty) {
     console.log(` Plug this tx hash into LayerZero Scan: ${receipt.transactionHash}`);
     console.log(`* check your address [${sender}] on the destination chain, in the ERC20 transaction tab!`);
 }
+
+module.exports = main;
