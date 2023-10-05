@@ -5,7 +5,11 @@ This script is designed to interact with the OFT smart contract to facilitate to
 - `estimateFees()`: This function provides an estimate of the fees required to send a certain amount of tokens.
 - `sendFrom()`: This function allows you to send tokens from one address on the source blockchain to another on the destination.
 
-This document will guide you through setup and usage.
+### Usage
+
+```
+npx hardhat sendFrom --qty 100000000000000 --network avalanche
+```
 
 ### Prerequisites
 
@@ -30,31 +34,38 @@ PRIVATE_KEY=<Your__Private_Key>
 `RPC_ENDPOINT`: This should be the URL of your Ethereum JSON RPC endpoint.
 `PRIVATE_KEY`: The private key of the Ethereum address you intend to use with the script.
 
-Ensure you have the necessary configurations set up in hardhat.config.js. If you're using the Avalanche network, make sure to add its configuration:
-
-```
-module.exports = {
-    networks: {
-        avalanche: {
-            url: process.env.RPC_ENDPOINT,
-            accounts: [process.env.PRIVATE_KEY],
-            chainId: <Avalanche_ChainID>
-        },
-        // ... other networks
-    },
-    // ... other configurations
-};
-```
-
 ### Running the Script
 
 To test the script on the Avalanche network:
 
 ```
-npx hardhat run scripts/sendFrom.js --network avalanche
+npx hardhat sendFrom --qty 100000000000000 --network avalanche
 ```
 
 This will initiate the token transfer, estimate the fees, and log the transaction details.
+
+```
+function sendFrom(
+    address _from, // sender
+    uint16 _dstChainId, // destination endpoint id
+    bytes memory _toAddress, // receiver address
+    uint256 _amount, // amount of tokens in wei units
+    address payable _refundAddress, // refund address
+    address _zroPaymentAddress, // ZRO payment address
+    bytes memory _adapterParams, // relayer adapter parameters
+    uint256 // msg.value
+  ) public payable virtual override {
+    _send(
+      _from,
+      _dstChainId,
+      _toAddress,
+      _amount,
+      _refundAddress,
+      _zroPaymentAddress,
+      _adapterParams
+    );
+  }
+```
 
 To see if your transaction is successful, plug the transaction hash into [LayerZero Scan](https://layerzeroscan.com/).
 
