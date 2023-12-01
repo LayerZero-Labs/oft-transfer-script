@@ -16,6 +16,10 @@ module.exports = {
     avalanche: {
       url: `https://api.avax.network/ext/bc/C/rpc`,
       accounts: [process.env.PRIVATE_KEY]
+    },
+    core: {
+      url: `https://rpc.coredao.org/`,
+      accounts: [process.env.PRIVATE_KEY]
     }
   }
 };
