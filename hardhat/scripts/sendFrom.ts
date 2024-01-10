@@ -23,7 +23,7 @@ async function main(qty: string) {
 
     // Define parameters for the sendFrom() function
     const sender = wallet.address; // Assuming sender is the wallet's address
-    const toAddress = wallet.address; // Assuming receiver is ALSO the wallet's address
+    const toAddress = wallet.address; // Must be padded to bytes32
     const amount = BigInt(qty); // Define the amount to send in wei units
     const refundAddress = sender; // Address where gas refunds will be sent if necessary
     const zroAddress = '0x0000000000000000000000000000000000000000'; // ZRO wallet address
